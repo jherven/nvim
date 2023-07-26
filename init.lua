@@ -132,11 +132,19 @@ require('lazy').setup({
   {
     -- Theme inspired by Atom
     'navarasu/onedark.nvim',
-    priority = 1000,
+    priority = 1,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      -- vim.cmd.colorscheme 'onedark'
     end,
   },
+  {
+    'sainnhe/everforest',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'everforest'
+    end,
+  },
+
 
   {
     -- Set lualine as statusline
@@ -210,7 +218,7 @@ require('lazy').setup({
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -247,6 +255,13 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+vim.opt.guifont = { "Inconsolata Nerd Font Mono:h12" }
+-- Don't know what the difference between opt and g
+if vim.g.neovide then
+  vim.g.guifont = { "Inconsolata Nerd Font Mono:h12" }
+  vim.g.neovide_cursor_animation_length = 0.0
+end
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
@@ -256,6 +271,37 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+
+-- My keymaps converted from my vanilla config
+-- Quicker copy/paste from system clipboard
+vim.api.nvim_set_keymap('n', vim.g.mapleader..'y', '"*y', { noremap = true })
+vim.api.nvim_set_keymap('n', vim.g.mapleader..'yy', '"*Y', { noremap = true })
+vim.api.nvim_set_keymap('n', vim.g.mapleader..'p', '"*p', { noremap = true })
+vim.api.nvim_set_keymap('n', vim.g.mapleader..'P', '"*P', { noremap = true })
+
+-- Navigate splits with space instead of control (Cu
+-- vim.api.nvim_set_keymap('n', '<space>wh', '<C-w>h', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<space>wj', '<C-w>j', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<space>wk', '<C-w>k', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<space>wl', '<C-w>l', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>wh', ':winc h<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>wj', ':winc j<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>wk', ':winc k<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>wl', ':winc l<cr>', { noremap = true })
+
+
+vim.api.nvim_set_keymap('n', '<space>gdd', 'gd', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>gds', ':only<bar>split<cr>gd', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>gdns', ':split<cr>gd', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>gdv', ':only<bar>vsplit<cr>gd', { noremap = true })
+vim.api.nvim_set_keymap('n', '<space>gdnv', ':vsplit<cr>gd', { noremap = true })
+
+vim.api.nvim_set_keymap('n', '<C-->', '<C-O>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<C-ä>', '<C-O>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<C-Ä>', '<C-O>', { noremap = true })
+
+vim.api.nvim_set_keymap('v', 'm', 'a{o}l^', { noremap = true })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -285,9 +331,9 @@ require('telescope').setup {
 pcall(require('telescope').load_extension, 'fzf')
 
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '<space>fl', require('telescope.builtin').oldfiles, { desc = '[?] Find from [L]ast files' })
+vim.keymap.set('n', '<space>fb', require('telescope.builtin').buffers, { desc = '[ ] Find existing [B]uffers' })
+vim.keymap.set('n', '<space>fc', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -295,18 +341,18 @@ vim.keymap.set('n', '<leader>/', function()
   })
 end, { desc = '[/] Fuzzily search in current buffer' })
 
-vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<space>fg', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
+vim.keymap.set('n', '<space>ff', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<space>fh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<space>fs', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<space>fw', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<space>fd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c_sharp', 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -396,7 +442,8 @@ local on_attach = function(_, bufnr)
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+  nmap('fr', require('telescope.builtin').lsp_references, '[F]ind [R]eferences')
+  nmap('gi', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
   nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
@@ -407,9 +454,9 @@ local on_attach = function(_, bufnr)
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function()
+  nmap('<leader>Wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
+  nmap('<leader>Wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+  nmap('<leader>Wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, '[W]orkspace [L]ist Folders')
 
@@ -425,6 +472,7 @@ end
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
 local servers = {
+  omnisharp = {}, 
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
@@ -438,6 +486,9 @@ local servers = {
     },
   },
 }
+
+vim.keymap.set('n', 'ft', '<Cmd>Neotree<CR>')
+vim.keymap.set('n', 'sp', '<Cmd>Neotree reveal<CR>')
 
 -- Setup neovim lua configuration
 require('neodev').setup()
